@@ -32,7 +32,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(description='Spectrogram VAE')
     parser.add_argument('--batch_size', type=int, default=batch_size,
                         help='How many wav files to process at once. Default: ' + str(batch_size) + '.')
-    parser.add_argument('--logdir', type=str, default=None,
+    parser.add_argument('--logdir', type=str, default="log",
                         help='Directory in which to store the logging '
                         'information for TensorBoard. '
                         'If the model already exists, it will restore '
@@ -51,6 +51,9 @@ def get_arguments():
     parser.add_argument('--max_checkpoints', type=int, default=max_checkpoints,
                         help='Maximum amount of checkpoints that will be kept alive. Default: '
                              + str(max_checkpoints) + '.')
+
+    parser.add_argument('--dataset', type=int, default="dataset.pkl",
+                        help='Path to stored spectrogram data. See Preprocessing and Experiments.ipynb')
     return parser.parse_args()
 
 def save(saver, sess, logdir, step):
@@ -115,7 +118,7 @@ def main():
     param['deconv_shape'] = deconv_shape
 
     # Load data
-    melspecs = load_specs()
+    melspecs = load_specs(args.dataset)
     # melspecs = 80.0*(np.random.random((10000,128,126))-1.0)
 
     # Create coordinator.
