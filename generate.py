@@ -57,6 +57,8 @@ def get_arguments():
                         help='Input file(s) from which to generate new audio. If none, sample random point in latent space')
     parser.add_argument('--file_out', type=str, default='generated',
                         help='Output file for storing new audio. ')
+    parser.add_argument('--output_dir', type=str, default='generated',
+                        help='Output directory for storing new audio. ')
     return parser.parse_args()
 
 def save(saver, sess, logdir, step):
@@ -148,7 +150,7 @@ def main():
         raise
 
     # Check if directory for saving exists
-    out_dir = f'{args.logdir}/generated-{saved_global_step}'
+    out_dir = args.output_dir
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
