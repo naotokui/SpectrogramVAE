@@ -59,6 +59,8 @@ def get_arguments():
                         help='Output file for storing new audio. ')
     parser.add_argument('--output_dir', type=str, default='generated',
                         help='Output directory for storing new audio. ')
+    parser.add_argument('--num_putputs', type=int, default=1,
+                        help='number of outputs')
     return parser.parse_args()
 
 def save(saver, sess, logdir, step):
@@ -97,22 +99,8 @@ def load(saver, sess, logdir):
 def main():
 
     args = get_arguments()
-
-    num_files = len(args.file_in)
-
-    if num_files > 0:
-        # Convert audio files to spectrograms
-        specs = []
-        for filename in args.file_in:
-            spec, _ = get_melspec(filename)
-            specs.append(np.expand_dims(spec, axis=0))
-        specs_in = np.concatenate(specs)
-        specs_in = (np.float32(specs_in) + 80.0) / 80.0
-        specs_in = np.expand_dims(specs_in, axis=3)
-
-        batch_size = num_files
-    else:
-        batch_size = 1
+    
+    batch_size = 1
 
     # Look for original parameters
     print('Loading existing parameters.')
@@ -154,57 +142,19 @@ def main():
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
 
-    if num_files > 0:
-
-        # Get embeddings
-        emb, out = net.encode_and_reconstruct(specs_in)
-        embedding, output = sess.run([emb, out])
-
-        # Average over embeddings
-        embedding_mean = np.mean(embedding, axis=0)
-
-        # Add zeros to send through same net with same batch size
-        embedding_mean_batch = np.float32(np.zeros((batch_size,param['dim_latent'])))
-        embedding_mean_batch[0] = embedding_mean
-
-    else:
+    for i in range(args.num_outputs):
         embedding_mean_batch = np.float32(np.random.standard_normal((1, param['dim_latent'])))
 
+        # Decode the mean embedding
+        out_mean = net.decode(embedding_mean_batch)
+        output_mean = sess.run(out_mean)
 
-    # Decode the mean embedding
-    out_mean = net.decode(embedding_mean_batch)
-    output_mean = sess.run(out_mean)
+        spec_out = (np.squeeze(output_mean[0])-1.0)*80.0
 
-    spec_out = (np.squeeze(output_mean[0])-1.0)*80.0
-    # # spec_out1 = (np.squeeze(output[0])-1.0)*80.0
-
-    # # Plot
-    # plt.figure(figsize=(10, (num_files+1)*4))
-
-    # if num_files > 0:
-    #     ax1 = plt.subplot(num_files+1, 1, 1)
-    #     librosa.display.specshow(np.squeeze(specs[0]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-    #                              hop_length=HOP_LENGTH)
-    #     plt.title(f'Original 1: ' + os.path.basename(args.file_in[0]))
-    #     for k in range(1,num_files):
-    #         plt.subplot(num_files + 1, 1, k+1, sharex=ax1)
-    #         librosa.display.specshow(np.squeeze(specs[k]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-    #                                  hop_length=HOP_LENGTH)
-    #         plt.title(f'Original {k+1}: ' + os.path.basename(args.file_in[k]))
-    #     plt.subplot(num_files+1, 1, num_files+1, sharex=ax1)
-    # else:
-    #     ax1 = plt.subplot(1, 1, 1)
-    # librosa.display.specshow(spec_out, sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-    #                          hop_length=HOP_LENGTH)
-    # plt.title('Combined Reconstruction')
-    # plt.tight_layout()
-    # plt.savefig(f'{out_dir}/{args.file_out}.png')
-    # plt.close()
-
-    # Reconstruct audio
-    audio = griffin_lim(spec_out)
-    audio_file = f'{out_dir}/{args.file_out}.wav'
-    librosa.output.write_wav(audio_file, audio / np.max(audio), sr=SAMPLING_RATE)
+        # Reconstruct audio
+        audio = griffin_lim(spec_out)
+        audio_file = f'{out_dir}/{args.file_out}_{i}.wav'
+        librosa.output.write_wav(audio_file, audio / np.max(audio), sr=SAMPLING_RATE)
 
 
 if __name__ == '__main__':
