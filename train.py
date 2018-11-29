@@ -32,7 +32,7 @@ def get_arguments():
     parser = argparse.ArgumentParser(description='Spectrogram VAE')
     parser.add_argument('--batch_size', type=int, default=batch_size,
                         help='How many wav files to process at once. Default: ' + str(batch_size) + '.')
-    parser.add_argument('--logdir', type=str, default="log",
+    parser.add_argument('--logdir', type=str, default="logdir",
                         help='Directory in which to store the logging '
                         'information for TensorBoard. '
                         'If the model already exists, it will restore '
