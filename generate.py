@@ -12,6 +12,7 @@ from util import *
 import librosa
 import librosa.display
 
+import soundfile as sf
 
 import matplotlib.pyplot as plt
 
@@ -154,8 +155,8 @@ def main():
         # Reconstruct audio
         audio = griffin_lim(spec_out)
         audio_file = f'{out_dir}/{args.file_out}_{i}.wav'
-        librosa.output.write_wav(audio_file, audio / np.max(audio), sr=SAMPLING_RATE)
-
+        #librosa.output.write_wav(audio_file, audio / np.max(audio), sr=SAMPLING_RATE)
+        sf.write(audio_file, audio / np.max(audio), SAMPLING_RATE)
 
 if __name__ == '__main__':
     main()
