@@ -52,7 +52,7 @@ def get_arguments():
                         help='Maximum amount of checkpoints that will be kept alive. Default: '
                              + str(max_checkpoints) + '.')
 
-    parser.add_argument('--dataset', type=int, default="dataset.pkl",
+    parser.add_argument('--dataset', type=str, default="dataset.pkl",
                         help='Path to stored spectrogram data. See Preprocessing and Experiments.ipynb')
     return parser.parse_args()
 
