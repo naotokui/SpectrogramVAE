@@ -11,6 +11,8 @@ from util import *
 
 import librosa
 import librosa.display
+
+
 import matplotlib.pyplot as plt
 
 param = {
@@ -172,30 +174,30 @@ def main():
     output_mean = sess.run(out_mean)
 
     spec_out = (np.squeeze(output_mean[0])-1.0)*80.0
-    # spec_out1 = (np.squeeze(output[0])-1.0)*80.0
+    # # spec_out1 = (np.squeeze(output[0])-1.0)*80.0
 
-    # Plot
-    plt.figure(figsize=(10, (num_files+1)*4))
+    # # Plot
+    # plt.figure(figsize=(10, (num_files+1)*4))
 
-    if num_files > 0:
-        ax1 = plt.subplot(num_files+1, 1, 1)
-        librosa.display.specshow(np.squeeze(specs[0]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-                                 hop_length=HOP_LENGTH)
-        plt.title(f'Original 1: ' + os.path.basename(args.file_in[0]))
-        for k in range(1,num_files):
-            plt.subplot(num_files + 1, 1, k+1, sharex=ax1)
-            librosa.display.specshow(np.squeeze(specs[k]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-                                     hop_length=HOP_LENGTH)
-            plt.title(f'Original {k+1}: ' + os.path.basename(args.file_in[k]))
-        plt.subplot(num_files+1, 1, num_files+1, sharex=ax1)
-    else:
-        ax1 = plt.subplot(1, 1, 1)
-    librosa.display.specshow(spec_out, sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
-                             hop_length=HOP_LENGTH)
-    plt.title('Combined Reconstruction')
-    plt.tight_layout()
-    plt.savefig(f'{out_dir}/{args.file_out}.png')
-    plt.close()
+    # if num_files > 0:
+    #     ax1 = plt.subplot(num_files+1, 1, 1)
+    #     librosa.display.specshow(np.squeeze(specs[0]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
+    #                              hop_length=HOP_LENGTH)
+    #     plt.title(f'Original 1: ' + os.path.basename(args.file_in[0]))
+    #     for k in range(1,num_files):
+    #         plt.subplot(num_files + 1, 1, k+1, sharex=ax1)
+    #         librosa.display.specshow(np.squeeze(specs[k]), sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
+    #                                  hop_length=HOP_LENGTH)
+    #         plt.title(f'Original {k+1}: ' + os.path.basename(args.file_in[k]))
+    #     plt.subplot(num_files+1, 1, num_files+1, sharex=ax1)
+    # else:
+    #     ax1 = plt.subplot(1, 1, 1)
+    # librosa.display.specshow(spec_out, sr=SAMPLING_RATE, y_axis='mel', x_axis='time',
+    #                          hop_length=HOP_LENGTH)
+    # plt.title('Combined Reconstruction')
+    # plt.tight_layout()
+    # plt.savefig(f'{out_dir}/{args.file_out}.png')
+    # plt.close()
 
     # Reconstruct audio
     audio = griffin_lim(spec_out)
