@@ -13,8 +13,13 @@ import librosa
 import librosa.display
 import matplotlib.pyplot as plt
 
-with open('audio_params.json', 'r') as f:
-    param = json.load(f)
+param = {
+    "N_FFT": 1024,
+    "HOP_LENGTH": 256,
+    "SAMPLING_RATE": 16000,
+    "MELSPEC_BANDS": 128,
+    "sample_secs": 2
+}
 
 N_FFT = param['N_FFT']
 HOP_LENGTH = param['HOP_LENGTH']
