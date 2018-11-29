@@ -59,7 +59,7 @@ def get_arguments():
                         help='Output file for storing new audio. ')
     parser.add_argument('--output_dir', type=str, default='generated',
                         help='Output directory for storing new audio. ')
-    parser.add_argument('--num_putputs', type=int, default=1,
+    parser.add_argument('--num_outputs', type=int, default=1,
                         help='number of outputs')
     return parser.parse_args()
 
